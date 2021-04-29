@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+.warning {
+  color: red;
+}
+
+h2 {
+  align-self: center;
+}
+
+h5, h6 {
+  margin: 0;
+  text-align: center;
+  margin-bottom: 1em;
+  color: #4c4b4b;
+}
+
+h5 {
+  font-size: 1.5em;;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.catalog {
+  max-width: 1000px;
+}
+
+.basket {
+  flex-direction: column;
+  min-width: 500px;
+}
+
+.basket .product-card {
+  flex-direction: row;
+  justify-content: space-between;
+  /* width: 100%; */
+}
+
+.product-name {
+  min-width: 200px;
+  float: left;
+  display: flex;
+}
+
+.basket .product-card > * {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+button {
+  background-color: transparent;
+  color: black;
+  border: 0;
+  font-size: 30px;
+}
+
+.quantity {
+  font-size: 20px;
+  align-self: center;
+}
+
+.catalog .add-to-cart {
+  background-color: #147508;
+  font-size: 18px;
+  border-radius: 10px;
+  color: white;
+  padding: .5em;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+}
+
+.basket .remove {
+  background-color: #f3615d;
+  font-size: 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+}
+
+button > svg {
+  vertical-align: middle;
+}
+
+.product-card {
+  margin: 1%;
+  padding: 1%;
+  flex-grow: 1;
+  flex-basis: 21%;
+
+  display: flex; /* so child elements can use flexbox stuff too! */
+  flex-direction: column;
+  border: 1px solid #0000001a;
+  border-radius: 2%;
+}
+
+.product-image {
+  margin: 30px;
+}
+
+.product-image img {
+  width: 100%;
+}
+
+.product-info {
+  /* margin-top: auto; */
+  display: flex;
+  justify-content: space-between;
+}
+
+.buy-options {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 2em;
+}
+
+.hide {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .product-card {
+    flex: 1 21%;
+  }
+}
+
+@media (max-width: 660px) {
+  .product-card {
+    flex: 1 45%;
+  }
+
+  .basket .product-card {
+    flex-direction: column;
+  }
+
+  .basket {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .product-name {
+    min-width: auto;
+    margin: 0 auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card {
+    flex: 1 46%;
+  }
+
+  .product-filter {
+    flex-direction: column;
+  }
+}
+
