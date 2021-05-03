@@ -1,7 +1,9 @@
 import './App.css';
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import logo from './assets/placeholder.png';
+import BasketItem from './Components/BasketItem';
+import CatalogItem from './Components/CatalogItem';
 
 class App extends React.Component {
   constructor(props) {
@@ -81,34 +83,34 @@ class App extends React.Component {
     }) 
   }
 
-  addToCart = ( event, item ) => {
-    console.log(item.id, item.quantity);
-    fetch("http://basket.local/app/basket.php?action=add&prodId=" + item.id + "&quantity=" +  item.quantity )
-      .then(res => res.json())
-      .then( (result) => { console.log( result ); },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
+  addToCart = ( event, itemId, itemQuantity ) => {
+    if ( itemQuantity > 0 ) {
+      fetch("http://basket.local/app/basket.php?action=add&prodId=" + itemId + "&quantity=" +  itemQuantity )
+        .then(res => res.json())
+        .then( (result) => { console.log( result ); },
+          (error) => {
+            this.setState({
+              isLoaded: true,
+              error
+            });
+          }
+      );
+      this.state.productList.map( currItem => {
+        if ( currItem.id == itemId ) {
+          currItem.quantity = 0;
         }
-    );
-    this.state.productList.map( currItem => {
-      if ( currItem.id == item.id ) {
-        currItem.quantity = 0;
-      }
-    })
-    this.setState({
-      lastUpdated: Date.now,
-    })
-    const timer = setTimeout(() => { this.getBasket(); }, 10);
+      })
+      this.setState({
+        lastUpdated: Date.now,
+      })
+      const timer = setTimeout(() => { this.getBasket(); }, 10);
+    }
   }
 
   removeFromCart = ( event, itemId ) => {
-    console.log(itemId);
     fetch("http://basket.local/app/basket.php?action=delete&prodId=" + itemId )
       .then(res => res.json())
-      .then( (result) => { this.setState({ lastUpdated: Date.now }) },
+      .then( (result) => { console.log('deleted') },
         (error) => {
           this.setState({
             isLoaded: true,
@@ -127,40 +129,35 @@ class App extends React.Component {
     } else if (!isLoaded) {
       return <div>Loading...</div>;
     } else {
-      console.log(this.state.productList);
       return (
         <React.Fragment>
           <h2>Product Catalog</h2>
           <ul className="products catalog">
             {productList.map(item => (
-                <li key={item.id} className="product-card">
-                  <div className="product-image">
-                    <img src={logo} />
-                  </div>
-                    <h5>{item.name}</h5>
-                    {item.stock != 0 ? <h6>{item.price} lei</h6> : <h6 className="warning">Out of stock</h6>} 
-                  <div className={`buy-options${(item.stock == 0) ? " hide" : ""}`}>
-                    <button onClick={(e) => this.DecrementItem(e, item.id)}>-</button>
-                    <div className="quantity">{(item.quantity) ? item.quantity : '0'}</div>
-                    <button onClick={(e) => this.IncrementItem(e, item.id)}>+</button>
-                    <button className="add-to-cart" onClick={(e) => this.addToCart(e, item)}>
-                    <svg width="20px" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" fillRule="evenodd"></path></svg>Add to basket
-                    </button>
-                  </div>
-                </li>
+                <CatalogItem 
+                  key={item.id} 
+                  id={item.id} 
+                  name={item.name} 
+                  price={item.price} 
+                  stock={item.stock} 
+                  quantity={item.quantity} 
+                  onDecrementPress={this.DecrementItem}
+                  onIncrementPress={this.IncrementItem}
+                  onAddToCartPress={this.addToCart}
+                />
             ))}
           </ul>
           <h2>Product Basket</h2>
           <ul className="products basket">
             {basketList.map(item => (
-                <li key={item.id} className="product-card">                  
-                  <h5 className="product-name">{item.prod_name}</h5>
-                  <h6>Quantity: {item.qty}</h6>
-                  <h6>Price: {item.total_price}</h6> 
-                  <button className="remove" onClick={(e) => this.removeFromCart(e, item.prod_id)}>
-                  <svg width="20px" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" fillRule="evenodd"></path></svg>Remove
-                  </button>
-                </li>
+                <BasketItem 
+                  key={item.id} 
+                  id={item.prod_id} 
+                  name={item.prod_name} 
+                  price={item.total_price} 
+                  quantity={item.qty} 
+                  onRemovePress={this.removeFromCart}
+                />
             ))}
           </ul>
         </React.Fragment>
