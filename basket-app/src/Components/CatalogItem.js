@@ -2,9 +2,6 @@ import React from 'react';
 import logo from './../assets/placeholder.png';
 
 export default class CatalogItem extends React.Component {
-    constructor( props ) {
-        super( props );
-    }
 
     render () {
         return (

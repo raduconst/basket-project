@@ -1,7 +1,7 @@
 import './App.css';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import logo from './assets/placeholder.png';
+// import ReactDOM from 'react-dom';
+// import logo from './assets/placeholder.png';
 import BasketItem from './Components/BasketItem';
 import CatalogItem from './Components/CatalogItem';
 
@@ -36,29 +36,30 @@ class App extends React.Component {
     );
   }
 
+  fetchProducts = async () => {
+    const res = await fetch("http://basket.local/app/products.php");
+    const data = await res.json();
+    try {
+      this.setState({
+        isLoaded: true,
+        productList: data,
+      });
+    } catch (error) {
+      this.setState({
+        isLoaded: true,
+        error,
+      });
+    }
+    if ( this.state.isLoaded ) {
+      this.state.productList.map(item => {
+        item.quantity = 0;
+      });
+    }
+  }
+
   componentDidMount() {
-    fetch("http://basket.local/app/products.php")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            isLoaded: true,
-            productList: result
-          });
-          if ( this.state.isLoaded ) {
-            this.state.productList.map(item => {
-              item.quantity = 0;
-            });
-          }
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      );
-      this.getBasket();
+    this.fetchProducts();
+    this.getBasket();
   }
 
   IncrementItem = ( event, itemId ) => {
@@ -83,42 +84,31 @@ class App extends React.Component {
     }) 
   }
 
-  addToCart = ( event, itemId, itemQuantity ) => {
+  addToCart = async( event, itemId, itemQuantity ) => {
     if ( itemQuantity > 0 ) {
-      fetch("http://basket.local/app/basket.php?action=add&prodId=" + itemId + "&quantity=" +  itemQuantity )
-        .then(res => res.json())
-        .then( (result) => { console.log( result ); },
-          (error) => {
-            this.setState({
-              isLoaded: true,
-              error
-            });
-          }
-      );
+      const res = await fetch("http://basket.local/app/basket.php?action=add&prodId=" + itemId + "&quantity=" +  itemQuantity );
+      const data = await res.json();
       this.state.productList.map( currItem => {
         if ( currItem.id == itemId ) {
           currItem.quantity = 0;
         }
       })
-      this.setState({
-        lastUpdated: Date.now,
-      })
-      const timer = setTimeout(() => { this.getBasket(); }, 10);
+      this.getBasket();
     }
   }
 
-  removeFromCart = ( event, itemId ) => {
-    fetch("http://basket.local/app/basket.php?action=delete&prodId=" + itemId )
-      .then(res => res.json())
-      .then( (result) => { console.log('deleted') },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-    );
-    const timer = setTimeout(() => { this.getBasket(); }, 10);
+  removeFromCart = async( event, itemId ) => {
+    const res = await fetch("http://basket.local/app/basket.php?action=delete&prodId=" + itemId );
+    const data = await res.json();
+    try {
+      console.log('deleted')
+    } catch (error) {
+      this.setState({
+        isLoaded: true,
+        error
+      });
+    }
+    this.getBasket();
   }
 
   render() {
